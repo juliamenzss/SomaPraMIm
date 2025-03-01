@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SomaPraMim.Domain\SomaPraMim.Domain.csproj" />
+    <ProjectReference Include="..\SomaPraMim.Infrastructure\SomaPraMim.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Shared\SomaPraMim.Communication\SomaPraMim.Communication.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

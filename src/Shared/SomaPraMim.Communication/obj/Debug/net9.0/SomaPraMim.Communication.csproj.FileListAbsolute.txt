@@ -1,0 +1,11 @@
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/bin/Debug/net9.0/SomaPraMim.Communication.deps.json
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/bin/Debug/net9.0/SomaPraMim.Communication.dll
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/bin/Debug/net9.0/SomaPraMim.Communication.pdb
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/obj/Debug/net9.0/SomaPraMim.Communication.GeneratedMSBuildEditorConfig.editorconfig
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/obj/Debug/net9.0/SomaPraMim.Communication.AssemblyInfoInputs.cache
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/obj/Debug/net9.0/SomaPraMim.Communication.AssemblyInfo.cs
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/obj/Debug/net9.0/SomaPraMim.Communication.csproj.CoreCompileInputs.cache
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/obj/Debug/net9.0/SomaPraMim.Communication.dll
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/obj/Debug/net9.0/refint/SomaPraMim.Communication.dll
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/obj/Debug/net9.0/SomaPraMim.Communication.pdb
+/home/juliamatos/devUbuntu/SomaPraMIm/src/Shared/SomaPraMim.Communication/obj/Debug/net9.0/ref/SomaPraMim.Communication.dll

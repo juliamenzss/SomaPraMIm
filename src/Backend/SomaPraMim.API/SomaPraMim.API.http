@@ -1,0 +1,6 @@
+@SomaPraMim.API_HostAddress = http://localhost:5294
+
+GET {{SomaPraMim.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
