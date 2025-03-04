@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using SomaPraMim.Application.Services.ShoppingListServices;
 using SomaPraMim.Application.Services.UserServices;
 using SomaPraMim.Domain.Contexts;
+using SomaPraMim.Domain.Entities;
 using SomaPraMim.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,7 @@ builder.Services.AddDbContext<SomaPraMimDbContext>(options =>
 builder.Services.AddScoped<IUserContext, SomaPraMimDbContext>();
 builder.Services.AddScoped<IShoppingListContext, SomaPraMimDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IShoppingListService, ShoppingListService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
