@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SomaPraMim.Domain.Enums;
 
 namespace SomaPraMim.Domain.Entities
 {
@@ -9,7 +6,9 @@ namespace SomaPraMim.Domain.Entities
     {
         public long ShoppingListId { get; set; }
         public string Name { get; set; } = string.Empty;
+        public int Quantity { get; set; }
         public decimal Price { get; set; }
+        public MeasurementUnit Unit { get; set; } 
         public ShoppingList? ShoppingLists { get; set; }
     }
 }

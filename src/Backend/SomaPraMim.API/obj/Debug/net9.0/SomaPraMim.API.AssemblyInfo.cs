@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SomaPraMim.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+35b3efb9b5160ade7888a52a67b985ec94e7b945")]
 [assembly: System.Reflection.AssemblyProductAttribute("SomaPraMim.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SomaPraMim.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
