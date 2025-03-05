@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SomaPraMim.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ddc6d95bdaf510688cfd10f805c7ba9e60fa7060")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87c7a5858b80f43490db8549b407159aa00c6eac")]
 [assembly: System.Reflection.AssemblyProductAttribute("SomaPraMim.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SomaPraMim.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

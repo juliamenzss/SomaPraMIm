@@ -1,5 +1,0 @@
-/home/juliamatos/devUbuntu/SomaPraMIm/src/Backend/SomaPraMim.Application/obj/Debug/net9.0/SomaPraMim.Application.csproj.AssemblyReference.cache
-/home/juliamatos/devUbuntu/SomaPraMIm/src/Backend/SomaPraMim.Application/obj/Debug/net9.0/SomaPraMim.Application.GeneratedMSBuildEditorConfig.editorconfig
-/home/juliamatos/devUbuntu/SomaPraMIm/src/Backend/SomaPraMim.Application/obj/Debug/net9.0/SomaPraMim.Application.AssemblyInfoInputs.cache
-/home/juliamatos/devUbuntu/SomaPraMIm/src/Backend/SomaPraMim.Application/obj/Debug/net9.0/SomaPraMim.Application.AssemblyInfo.cs
-/home/juliamatos/devUbuntu/SomaPraMIm/src/Backend/SomaPraMim.Application/obj/Debug/net9.0/SomaPraMim.Application.csproj.CoreCompileInputs.cache

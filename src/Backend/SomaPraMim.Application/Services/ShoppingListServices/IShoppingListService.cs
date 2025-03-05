@@ -5,6 +5,6 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
 {
     public interface IShoppingListService
     {
-        Task<ShoppingList> CreateList(ShoppingListCreateRequest request);
+        Task<ShoppingList> CreateShoppingList(ShoppingListCreateRequest request);
     }
 }

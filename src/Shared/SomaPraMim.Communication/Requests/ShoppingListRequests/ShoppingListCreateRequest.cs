@@ -5,5 +5,6 @@ namespace SomaPraMim.Communication.Requests.ShoppingListRequests
         public string Name { get; set; } = string.Empty;
         public string MarketName { get; set; } = string.Empty;
         public decimal Budget { get; set; }
+        public long UserId { get; set; }
     }
 }
