@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace SomaPraMim.Domain.Entities
 {
     public class ShoppingList : ModelBase
     {
+        public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string MarketName { get; set; } = string.Empty;
         public decimal Budget { get; set; }
