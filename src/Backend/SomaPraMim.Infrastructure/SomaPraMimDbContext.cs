@@ -28,7 +28,6 @@ public class SomaPraMimDbContext(DbContextOptions<SomaPraMimDbContext> options)
             .WithMany(u => u.ShoppingLists)
             .HasForeignKey(sl => sl.UserId);
 
-        // Relacionamento entre ShoppingItem e ShoppingList
         modelBuilder.Entity<ShoppingItem>()
             .HasOne(si => si.ShoppingLists)
             .WithMany(sl => sl.Items)

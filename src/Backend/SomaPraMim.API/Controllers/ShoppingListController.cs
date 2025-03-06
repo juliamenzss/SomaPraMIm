@@ -22,7 +22,7 @@ namespace SomaPraMim.API.Controllers
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
                 var shoppingList = await _service.CreateShoppingList(request);
-                return CreatedAtAction(nameof(GetList), new { id = shoppingList.Id }, shoppingList);
+                return CreatedAtAction(nameof(GetById), new { id = shoppingList.Id }, shoppingList);
             }
             catch (DbException)
             {
@@ -34,9 +34,11 @@ namespace SomaPraMim.API.Controllers
             }
         }
 
-        private object GetList()
+        public async Task<IActionResult> GetById(long id)
         {
-            throw new NotImplementedException();
+            var shoppingList = await _service.GetShoppingListById(id);
+            if (shoppingList == null) return NotFound();
+            return Ok(shoppingList);
         }
     }
 }

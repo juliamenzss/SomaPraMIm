@@ -1,13 +1,11 @@
-namespace SomaPraMim.Domain.Entities
+namespace SomaPraMim.Communication.Responses
 {
-    public class ShoppingList : ModelBase
+    public class ShoppingListResponse
     {
         public string Name { get; set; } = string.Empty;
         public string MarketName { get; set; } = string.Empty;
         public decimal Budget { get; set; }
         public decimal TotalPrice { get; set; } = 0;
         public long UserId { get; set; }
-        public User? User { get; set; } 
-        public List<ShoppingItem> Items { get; set; } = [];
     }
 }
