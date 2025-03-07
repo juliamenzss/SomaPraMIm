@@ -7,6 +7,7 @@ namespace SomaPraMim.Domain.Contexts
     {
         public DbSet<ShoppingList> ShoppingLists { get; set; }
         public DbSet<User> Users { get; set; }
+        DbSet<ShoppingItem> ShoppingItems { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

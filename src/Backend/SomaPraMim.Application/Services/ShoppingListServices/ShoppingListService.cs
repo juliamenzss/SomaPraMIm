@@ -69,6 +69,25 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
             return shopppingList;
         }
 
+        public async Task<IEnumerable<ShoppingItemResponse?>> GetItemsByShoppingListId(long shoppingListId)
+        {
+            var items = await _context.ShoppingItems
+                .Where(x => x.ShoppingListId == shoppingListId)
+                .Select(x => new ShoppingItemResponse
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Quantity = x.Quantity,
+                    Price = x.Price,
+                    ShoppingListId = x.ShoppingListId
+                })
+                .ToListAsync();
+
+            if (items == null) return null!;
+
+            return items;
+        }
+
         public async Task<IEnumerable<ShoppingListResponse>> GetShoppingList(int page = 1, int pageSize = 10)
         {
             var shopppingList = await _context.ShoppingLists
@@ -91,6 +110,24 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
         public async Task<int> GetTotal()
         {
             return await _context.ShoppingLists.CountAsync();
+        }
+
+        public async Task<ShoppingList> UpdateShoppingList(long id, ShoppingListUpdateRequest request)
+        {
+            var shoppingList = await _context.ShoppingLists
+            .SingleOrDefaultAsync(x => x.Id == id);
+
+            if (shoppingList == null)
+            {
+                return null!;
+            }
+
+            shoppingList.Name = request.Name ?? shoppingList.Name;
+            shoppingList.Budget = request.Budget ?? shoppingList.Budget;
+            shoppingList.MarketName = request.MarketName ?? shoppingList.MarketName;
+
+            await _context.SaveChangesAsync();
+            return shoppingList;
         }
 
           public async Task<ShoppingListResponse> DeleteShoppingList(long id)

@@ -48,6 +48,20 @@ namespace SomaPraMim.API.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ShoppingItemResponse>))]
+        [HttpGet("{shoppingListId}/items")]
+        public async Task<IActionResult> GetItemsByShoppingList(long shoppingListId)
+        {
+            var items = await _service.GetItemsByShoppingListId(shoppingListId);
+
+            if (items == null || !items.Any())
+                return NotFound("Não há itens nessa lista ainda!");
+
+            return Ok(items);
+        }
+
+
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ShoppingListResponse>))]
         [HttpGet]
         public async Task<IActionResult> GetAll(int page = 1, int pagesize = 10)
@@ -66,6 +80,38 @@ namespace SomaPraMim.API.Controllers
             };
             return Ok(result);
         }
+
+        [HttpPut("{Id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Put(long id, ShoppingListUpdateRequest request){
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var shoppingList = await _service.UpdateShoppingList(id, request);
+
+                if (shoppingList == null)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
+
+            }
+            catch (DbException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpDelete("{id}")]
