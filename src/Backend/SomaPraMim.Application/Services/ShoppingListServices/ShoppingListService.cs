@@ -130,12 +130,20 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
             return shoppingList;
         }
 
-          public async Task<ShoppingListResponse> DeleteShoppingList(long id)
+        public async Task<ShoppingListResponse> DeleteShoppingList(long id)
         {
             await _context.ShoppingLists.Where(x => x.Id == id).ExecuteDeleteAsync();
             return null!;
         }
 
+        public async Task<decimal> GetShoppingListTotal(long shoppingListId)
+        {
+            var total = await _context.ShoppingItems
+                .Where(x => x.ShoppingListId == shoppingListId)
+                .SumAsync(x => x.Price * x.Quantity);
+
+                return total;
+        }
 
     
     }

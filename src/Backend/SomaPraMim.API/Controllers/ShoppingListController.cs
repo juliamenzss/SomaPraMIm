@@ -47,8 +47,8 @@ namespace SomaPraMim.API.Controllers
             return Ok(shoppingList);
         }
 
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ShoppingItemResponse>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{shoppingListId}/items")]
         public async Task<IActionResult> GetItemsByShoppingList(long shoppingListId)
         {
@@ -61,8 +61,8 @@ namespace SomaPraMim.API.Controllers
         }
 
 
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ShoppingListResponse>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         public async Task<IActionResult> GetAll(int page = 1, int pagesize = 10)
         {
@@ -120,5 +120,19 @@ namespace SomaPraMim.API.Controllers
             await _service.DeleteShoppingList(id);
             return Ok();
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{id}/total")]
+        public async Task<IActionResult> GetTotal(long shoppingListId)
+        {
+            var total = await _service.GetShoppingListTotal(shoppingListId);
+            if(total <= 0){
+                return NotFound("Lista vazia!");
+            }
+            
+            return Ok(new { TotalPrice = total });
+        }
+    
     }
 }
