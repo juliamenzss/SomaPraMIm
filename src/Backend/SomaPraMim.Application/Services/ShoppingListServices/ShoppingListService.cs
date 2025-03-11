@@ -114,6 +114,8 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
 
         public async Task<ShoppingList> UpdateShoppingList(long id, ShoppingListUpdateRequest request)
         {
+
+            
             var shoppingList = await _context.ShoppingLists
             .SingleOrDefaultAsync(x => x.Id == id);
 
@@ -130,10 +132,11 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
             return shoppingList;
         }
 
-        public async Task<ShoppingListResponse> DeleteShoppingList(long id)
+        public async Task DeleteShoppingList(long id)
         {
-            await _context.ShoppingLists.Where(x => x.Id == id).ExecuteDeleteAsync();
-            return null!;
+            await _context.ShoppingLists
+            .Where(x => x.Id == id)
+            .ExecuteDeleteAsync();
         }
 
         public async Task<decimal> GetShoppingListTotal(long shoppingListId)

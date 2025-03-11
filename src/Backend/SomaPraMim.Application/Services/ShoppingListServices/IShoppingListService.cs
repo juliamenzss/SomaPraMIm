@@ -11,7 +11,7 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
         Task<ShoppingListResponse?> GetShoppingListById(long id);
         Task<IEnumerable<ShoppingListResponse>> GetShoppingList(int page = 1, int pageSize = 10);
         Task<int> GetTotal();
-        Task<ShoppingListResponse> DeleteShoppingList(long id);
+        Task DeleteShoppingList(long id);
         Task<IEnumerable<ShoppingItemResponse?>> GetItemsByShoppingListId(long shoppingListId);
         Task<ShoppingList> UpdateShoppingList(long id, ShoppingListUpdateRequest request);
         Task<decimal> GetShoppingListTotal(long shoppingListId);
