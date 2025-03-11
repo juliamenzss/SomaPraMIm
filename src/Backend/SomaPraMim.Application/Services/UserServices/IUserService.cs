@@ -8,9 +8,9 @@ namespace SomaPraMim.Application.Services.UserServices
     {
         Task<IEnumerable<UserResponse>> GetAll(int page = 1, int pageSize = 10);
         Task<int> GetTotal();
-        Task<UserResponse> GetUserById(long id);
+        Task<UserResponse> GetUser(long id);
         Task<User> Create(UserCreateRequest request);
-        Task<User> Update(long id, UserUpdateRequest request);
-        Task<UserResponse> Delete(long id);
+        Task<User> Update(UserUpdateRequest request, long id );
+        Task Delete(long id);
     }
 }

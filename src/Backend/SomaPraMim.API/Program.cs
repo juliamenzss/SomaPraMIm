@@ -1,8 +1,12 @@
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SomaPraMim.Application.Services.ShoppingListServices;
 using SomaPraMim.Application.Services.UserServices;
+using SomaPraMim.Application.Validators;
+using SomaPraMim.Application.Validators.UserValidator;
+using SomaPraMim.Communication.Requests.UserRequests;
 using SomaPraMim.Domain.Contexts;
-using SomaPraMim.Domain.Entities;
 using SomaPraMim.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +20,9 @@ builder.Services.AddScoped<IUserContext, SomaPraMimDbContext>();
 builder.Services.AddScoped<IShoppingListContext, SomaPraMimDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IShoppingListService, ShoppingListService>();
+builder.Services.AddScoped<IValidator<UserCreateRequest>, UserCreateValidator>();
+builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateValidator>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
