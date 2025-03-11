@@ -39,7 +39,7 @@ namespace SomaPraMim.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(long id)
         {
-            var user = await _service.GetUserById(id);
+            var user = await _service.GetUser(id);
             if(user == null) return NotFound();
             
             return Ok(user);
@@ -71,7 +71,7 @@ namespace SomaPraMim.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, UserUpdateRequest request)
+        public async Task<IActionResult> PutUser(UserUpdateRequest request, long id)
         {
             if (!ModelState.IsValid)
             {
@@ -80,7 +80,7 @@ namespace SomaPraMim.API.Controllers
 
             try
             {
-                var user = await _service.Update(id, request);
+                var user = await _service.Update(request, id);
                 if(user == null) return NotFound();
 
                 return NoContent();
