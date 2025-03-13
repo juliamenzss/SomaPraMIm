@@ -11,6 +11,6 @@ namespace SomaPraMim.Domain.Entities
         public decimal TotalPrice { get; set; } = 0;
         public long UserId { get; set; }
         public User? User { get; set; } 
-        public List<ShoppingItem> Items { get; set; } = [];
+        public List<ShoppingItem> ShoppingItems { get; set; } = [];
     }
 }
