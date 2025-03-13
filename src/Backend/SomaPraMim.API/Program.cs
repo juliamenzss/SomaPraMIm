@@ -1,11 +1,7 @@
-using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SomaPraMim.Application.Services.ShoppingItemServices;
 using SomaPraMim.Application.Services.ShoppingListServices;
 using SomaPraMim.Application.Services.UserServices;
-using SomaPraMim.Application.Validators;
-using SomaPraMim.Application.Validators.UserValidator;
-using SomaPraMim.Communication.Requests.UserRequests;
 using SomaPraMim.Domain.Contexts;
 using SomaPraMim.Infrastructure;
 
@@ -18,10 +14,10 @@ builder.Services.AddDbContext<SomaPraMimDbContext>(options =>
 // Injeção de dependência
 builder.Services.AddScoped<IUserContext, SomaPraMimDbContext>();
 builder.Services.AddScoped<IShoppingListContext, SomaPraMimDbContext>();
+builder.Services.AddScoped<IShoppingItemContext, SomaPraMimDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IShoppingListService, ShoppingListService>();
-builder.Services.AddScoped<IValidator<UserCreateRequest>, UserCreateValidator>();
-builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateValidator>();
+builder.Services.AddScoped<IShoppingItemService, ShoppingItemService>();
 
 
 builder.Services.AddControllers();
