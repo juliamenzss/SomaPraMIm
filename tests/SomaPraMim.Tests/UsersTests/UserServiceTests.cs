@@ -1,18 +1,75 @@
-using FluentAssertions;
-using SomaPraMim.Domain.Contexts;
 using Moq;
 using Moq.EntityFrameworkCore;
-using SomaPraMim.Application.Services.UserServices;
-using FluentValidation;
-using SomaPraMim.Communication.Requests.UserRequests;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 using SomaPraMim.Domain.Entities;
+using SomaPraMim.Application.Services.UserServices;
+using SomaPraMim.Communication.Requests.UserRequests;
+using FluentValidation;
+using SomaPraMim.Domain.Contexts;
+
 
 namespace SomaPraMim.Tests.UsersTests
 {
     public class UserServiceTests
     {
-        [Fact(DisplayName = "001 Retorna lista de usuários")]
-        public async Task GivenGetAll_ThenReturnsUserList()
+        [Fact(DisplayName = "001 Retorna lista de usuários paginada")]
+        public async Task GetAll_WithPagination_ReturnsPaginatedUserList()
+        {
+            var users = new List<User>
+            {
+                new (){  Id = Random.Shared.Next(), Name = Guid.NewGuid().ToString(), Email = Guid.NewGuid().ToString() },
+                new (){  Id = Random.Shared.Next(), Name = Guid.NewGuid().ToString(), Email = Guid.NewGuid().ToString() },
+            };
+        
+            var context = new Mock<IUserContext>();
+
+            context.
+                Setup(x => x.Users)
+                .ReturnsDbSet(users);
+
+            var service = new UserService(
+                context.Object);
+
+            var page = 2;
+            var pageSize = 2;
+            var result = await service.GetAll(page, pageSize);
+
+            Assert.Equal(page, result.CurrentPage);
+            Assert.Equal(pageSize, result.PageSize);
+            Assert.Equal(users.Count, result.TotalItems);
+        }
+
+        [Fact(DisplayName = "002 Retorna search term")]
+        public async Task GetAll_WithSearchTerm_ReturnsFilteredUserList()
+        {
+            var users = new List<User>
+            {
+                new() { Id = 1, Name = "Alice Teste", Email = "alice@email.com" },
+                new() { Id = 2, Name = "Bob Silva", Email = "bob@email.com" }
+            };
+
+            var searchTermActual = "Teste";
+
+            var context = new Mock<IUserContext>();
+
+            context.Setup(x => x.Users)
+                   .ReturnsDbSet(users);
+
+            var service = new UserService(
+                context.Object);
+
+            var result = await service.GetAll(searchTerm: searchTermActual);
+
+            Assert.Single(result.Items);
+            Assert.Equal("Alice Teste", result.Items.First().Name);
+        }
+
+        [Fact(DisplayName = "003 Retorna get de usuário")]
+        public async Task GivenGet_ThenReturnsUser()
         {
             var users = new List<User>
             {
@@ -37,17 +94,92 @@ namespace SomaPraMim.Tests.UsersTests
                 .ReturnsDbSet(users);
 
             var service = new UserService(
-                context.Object,
-                Mock.Of<IValidator<UserCreateRequest>>(),
-                Mock.Of<IValidator<UserUpdateRequest>>());
+                context.Object);
 
             var user = await service.GetUser(users[0].Id);
 
             Assert.Equal(users[0].Name, user.Name);
-
         }
 
 
-        
+        [Fact(DisplayName = "004 - Deve retornar true se existir")]
+        public async Task GivenExists_ThenReturnTrue()
+        {
+            var user = new User()
+            {
+                Id = Random.Shared.Next(),
+                Name = Guid.NewGuid().ToString(),
+                Email = Guid.NewGuid().ToString(),
+            };
+            var context = new Mock<IUserContext>();
+
+            context.
+                Setup(x => x.Users)
+                .ReturnsDbSet([user]);
+
+            var service = new UserService(
+                context.Object);
+
+            var exixts = await service.Exists(user.Id);
+
+            Assert.True(exixts);
+        }
+
+        [Fact(DisplayName = "005 - Deve chamar savechange uma vez")]
+        public async Task GivenCreate_ThenReturnCallSaveChangeAsync()
+        {
+            var user = new UserCreateRequest()
+            {
+                Name = Guid.NewGuid().ToString(),
+                Email = Guid.NewGuid().ToString(),
+                Password = Guid.NewGuid().ToString(),
+            };
+
+            var context = new Mock<IUserContext>();
+
+            context.
+                Setup(x => x.Users)
+                .ReturnsDbSet([]);
+
+            var service = new UserService(
+                context.Object);
+
+            await service.Create(user);
+            
+            //assert
+            context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact(DisplayName = "006 - Deve fazer update")]
+        public async Task GivenUpdate_ThenReturn()
+        {
+            var id = Random.Shared.Next();
+
+            var user = new User()
+            {
+                Id =  id,
+                Name = Guid.NewGuid().ToString(),
+                Password = Guid.NewGuid().ToString(),
+            };
+
+             var userUpdate = new UserUpdateRequest()
+            {
+                Id =  id,
+                Name = Guid.NewGuid().ToString(),
+                Password = Guid.NewGuid().ToString(),
+            };
+
+            var users = new List<User> { user };
+            var context = new Mock<IUserContext>();
+            context
+                .Setup(x => x.Users)
+                .ReturnsDbSet(users);
+
+            var service = new UserService(
+                context.Object);
+
+            await service.Update(userUpdate, userUpdate.Id);
+            context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }
