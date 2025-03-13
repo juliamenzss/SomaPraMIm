@@ -2,7 +2,7 @@ namespace SomaPraMim.Domain.Enums
 {
     public enum MeasurementUnit
     {
-        Unit,
-        Kg
+        Unit = 1,
+        Kg = 2
     }
 }
