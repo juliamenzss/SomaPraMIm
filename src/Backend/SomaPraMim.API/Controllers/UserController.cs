@@ -15,23 +15,13 @@ namespace SomaPraMim.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserResponse>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        public async Task<IActionResult> GetUsers(int page = 1, int pageSize = 10)
+        public async Task<ActionResult<PaginateResponse<UserResponse>>> GetUsers(
+        [FromQuery] int page = 1, 
+        [FromQuery] int pageSize = 10, 
+        [FromQuery] string? searchTerm = null)
         {
-            var users = await _service.GetAll(page, pageSize);
-
-            if (users == null || !users.Any())
-            {
-                return NotFound("Users not found");
-            }
-
-            var result = new PaginateResponse<UserResponse>
-            {
-                CurrentPage = page,
-                PageSize = pageSize,
-                Items = users,
-                TotalItems = await _service.GetTotal()
-            };
-            return Ok(result);
+            var paginatedResult = await _service.GetAll(page, pageSize, searchTerm);
+            return Ok(paginatedResult);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -39,10 +29,12 @@ namespace SomaPraMim.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(long id)
         {
+            var exists = await _service.Exists(id);
+            if(exists){
             var user = await _service.GetUser(id);
-            if(user == null) return NotFound();
-            
             return Ok(user);
+            }
+            return NotFound();
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -74,26 +66,31 @@ namespace SomaPraMim.API.Controllers
         public async Task<IActionResult> PutUser(UserUpdateRequest request, long id)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
+            if (!await _service.Exists(id))
+                return NotFound();
 
             try
             {
                 var user = await _service.Update(request, id);
-                if(user == null) return NotFound();
-
-                return NoContent();
+                return user == null ? NotFound() : NoContent();
             }
-            catch (DbException)
+            catch (ArgumentException ex)
             {
-                return BadRequest();
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { error = "Usuário não encontrado." });
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500, new { error = "Erro interno no servidor." });
             }
         }
+
+
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)] 
         public async Task<IActionResult> DeleteUser(long id)
