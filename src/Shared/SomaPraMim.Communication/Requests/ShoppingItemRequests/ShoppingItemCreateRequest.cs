@@ -1,14 +1,13 @@
-using SomaPraMim.Domain.Enums;
+using SomaPraMim.Domain.Enums; 
 
-namespace SomaPraMim.Communication.Responses
+namespace SomaPraMim.Communication.Requests.ShoppingItemRequests
 {
-    public class ShoppingItemResponse
+    public class ShoppingItemCreateRequest
     {
-        public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Quantity { get; set; }
-        public MeasurementUnit Unit { get; set; }
         public decimal Price { get; set; }
+        public MeasurementUnit Unit { get; set; } 
         public long ShoppingListId { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using SomaPraMim.Application.Validators;
 using SomaPraMim.Communication.Requests.UserRequests;
 using SomaPraMim.Communication.Responses;
 using SomaPraMim.Domain.Contexts;
@@ -11,22 +10,25 @@ namespace SomaPraMim.Application.Services.UserServices
     public class UserService : IUserService
     {
         private readonly IUserContext _context;
-        private readonly IValidator<UserCreateRequest> _createValidator;
-        private readonly IValidator<UserUpdateRequest> _updateValidator;
         public UserService(
-            IUserContext context,
-            IValidator<UserCreateRequest> createValidator,
-            IValidator<UserUpdateRequest> updateValidator)
+            IUserContext context)
 
         {
             _context = context;
-            _createValidator = createValidator;
-            _updateValidator = updateValidator;
         }
 
-        public async Task<IEnumerable<UserResponse>> GetAll(int page = 1, int pageSize = 10)
+        public async Task<PaginateResponse<UserResponse>> GetAll(int page = 1, int pageSize = 10, string? searchTerm = null)
         {
-            var users = await _context.Users
+            var query = _context.Users.AsQueryable();
+            
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(x => EF.Functions.Like(x.Name.ToLower(), $"%{searchTerm.ToLower()}%"));
+            }
+
+            var totalItems = await query.CountAsync();
+
+            var users = await query
                 .OrderBy(x => x.Name)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -36,13 +38,17 @@ namespace SomaPraMim.Application.Services.UserServices
                     Name = x.Name,
                     Email = x.Email,
                 })
-                .ToListAsync();
-            return users;
+                .ToListAsync();  
+                
+            return new PaginateResponse<UserResponse>
+            {
+                Items = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
         }
-        public async Task<int> GetTotal()
-        {
-            return await _context.Users.CountAsync();
-        }
+
 
         public async Task<UserResponse> GetUser(long id)
         {
@@ -63,7 +69,6 @@ namespace SomaPraMim.Application.Services.UserServices
 
         public async Task<User> Create(UserCreateRequest request)
         {
-            await ValidateCreate(request);
 
             var newUser = new User
             {
@@ -78,18 +83,21 @@ namespace SomaPraMim.Application.Services.UserServices
 
         public async Task<User> Update(UserUpdateRequest request, long id)
         {
-            await ValidateUpdate(request, id);
 
-            await _context.Users
-                .Where(u => u.Id == id)
-                .ExecuteUpdateAsync(prop => prop
-                    .SetProperty(u => u.Name, request.Name)
-                    .SetProperty(u => u.Password, request.Password));
+             var user = await _context.Users
+                    .SingleOrDefaultAsync(x => x.Id == id);
 
-            var user = await _context.Users
-                .SingleOrDefaultAsync(x => x.Id == id);
+            if (user == null)
+            {
+                return null!;
+            }
 
-            return user!;
+            user.Name = request.Name;
+            user.Password = request.Password;
+
+            await _context.SaveChangesAsync();
+
+            return user;
         }
 
 
@@ -100,41 +108,11 @@ namespace SomaPraMim.Application.Services.UserServices
                 .ExecuteDeleteAsync();
         }
 
-
-        private async Task ValidateCreate(UserCreateRequest request)
+        public async Task<bool> Exists(long id)
         {
-            var result = _createValidator.Validate(request);
-
-            var emailExist = await _context.Users
-                .AnyAsync(u => u.Email == request.Email);
-
-            if (emailExist)
-            {
-                result.Errors.Add(new FluentValidation.Results.ValidationFailure("Email", "E-mail já em uso."));
-            }
-
-            if (!result.IsValid)
-            {
-                var errorMessages = result.Errors.Select(e => e.ErrorMessage).ToList();
-                throw new ArgumentException(string.Join("; ", errorMessages));
-            }
+            return await _context.Users
+                .AnyAsync(x => x.Id == id);
         }
-
-        private async Task ValidateUpdate(UserUpdateRequest request, long id)
-        {
-            var result = _updateValidator.Validate(request);
-
-            var userExists = await _context.Users.AnyAsync(u => u.Id == id);
-            if (!userExists)
-            {
-                throw new KeyNotFoundException($"Usuário com Id não encontrado.");
-            }
-
-            if (!result.IsValid)
-            {
-                var errorMessages = result.Errors.Select(e => e.ErrorMessage).ToList();
-                throw new ArgumentException(string.Join("; ", errorMessages));
-            }
-        }
+        
     }
 }

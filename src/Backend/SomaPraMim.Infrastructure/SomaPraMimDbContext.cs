@@ -5,7 +5,7 @@ using SomaPraMim.Domain.Entities;
 namespace SomaPraMim.Infrastructure;
 
 public class SomaPraMimDbContext(DbContextOptions<SomaPraMimDbContext> options)
-    : DbContext(options), IUserContext, IShoppingListContext
+    : DbContext(options), IUserContext, IShoppingListContext, IShoppingItemContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<ShoppingList> ShoppingLists { get; set; }
@@ -19,20 +19,16 @@ public class SomaPraMimDbContext(DbContextOptions<SomaPraMimDbContext> options)
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        modelBuilder.Entity<User>()
-            .HasIndex(u => u.Cpf)
-            .IsUnique();
-
         modelBuilder.Entity<ShoppingList>()
             .HasOne(sl => sl.User)
-            .WithMany()
+            .WithMany(sl => sl.ShoppingLists)
             .HasForeignKey(sl => sl.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
 
         modelBuilder.Entity<ShoppingItem>()
             .HasOne(si => si.ShoppingList)
-            .WithMany()
+            .WithMany(sl => sl.ShoppingItems)
             .HasForeignKey(si => si.ShoppingListId)
             .OnDelete(DeleteBehavior.Restrict);
     }
