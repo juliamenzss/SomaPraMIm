@@ -10,6 +10,12 @@ SomaPraMim é uma aplicação para facilitar a soma rápida de produtos no merca
 ## 🚀 Tecnologias  
 
 - **C#**  
+- **ASP.NET Core**  
+- **Entity Framework Core**  
+- **PostgreSQL**  
+- **Docker**  
+- **Docker Compose**  
+- **xUnit**  
 
 ## 📌 Status do Projeto  
 Atualmente, o projeto conta com:  
