@@ -16,12 +16,8 @@ namespace SomaPraMim.Application.Services.ShoppingItemServices
 
         public async Task<ShoppingItemResponse> CreateShoppingItem(ShoppingItemCreateRequest request)
         {
-            var existingList = await _context.ShoppingLists.FindAsync(request.ShoppingListId);
-            if (existingList == null)
-            {
-                throw new Exception("A lista de compras especificada não existe.");
-            }
-
+            var existingList = await _context.ShoppingLists.FindAsync(request.ShoppingListId) ?? throw new Exception("A lista de compras especificada não existe.");
+           
             var shoppingItem = new ShoppingItem
             {
                 Name = request.Name,
@@ -31,6 +27,12 @@ namespace SomaPraMim.Application.Services.ShoppingItemServices
                 ShoppingListId = request.ShoppingListId
             };
             _context.ShoppingItems.Add(shoppingItem);
+
+            decimal totalPrice = request.Price * request.Quantity;
+            existingList.TotalPrice += totalPrice;
+            existingList.Budget -= totalPrice;
+            existingList.TotalItems += request.Quantity;
+
             await _context.SaveChangesAsync();
 
             return new ShoppingItemResponse
@@ -40,6 +42,22 @@ namespace SomaPraMim.Application.Services.ShoppingItemServices
                 Quantity = shoppingItem.Quantity,
                 Price = shoppingItem.Price,
             };
+        }
+
+        public async Task<bool> RemoveShoppingItem(long id){
+            var item = await _context.ShoppingItems.FindAsync(id);
+            if(item == null) return false;
+
+            var shoppingList = await _context.ShoppingLists.FindAsync(item.ShoppingListId);
+            if(shoppingList == null) return false;
+
+            decimal totalPrice = item.Price * item.Quantity;
+            shoppingList.TotalPrice -= totalPrice;
+            shoppingList.Budget += totalPrice;
+
+            _context.ShoppingItems.Remove(item);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
           public async Task<ShoppingItemResponse> GetShoppingItemById(long id)

@@ -9,6 +9,8 @@ namespace SomaPraMim.Domain.Entities
         public string MarketName { get; set; } = string.Empty;
         public decimal Budget { get; set; }
         public decimal TotalPrice { get; set; } = 0;
+        public int TotalItems { get; set; } = 0;
+
         public long UserId { get; set; }
         public User? User { get; set; } 
         public List<ShoppingItem> ShoppingItems { get; set; } = [];

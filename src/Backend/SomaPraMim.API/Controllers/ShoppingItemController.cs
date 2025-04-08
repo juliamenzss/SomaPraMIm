@@ -47,6 +47,15 @@ namespace SomaPraMim.API.Controllers
         }
 
 
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveItem(long id)
+        {
+            var item = await _service.RemoveShoppingItem(id);
+
+            return NoContent();
+        }
+
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ShoppingItemResponse>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]

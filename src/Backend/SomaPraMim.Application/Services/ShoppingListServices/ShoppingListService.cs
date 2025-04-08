@@ -3,6 +3,7 @@ using SomaPraMim.Domain.Entities;
 using SomaPraMim.Communication.Requests.ShoppingListRequests;
 using SomaPraMim.Communication.Responses;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 
 namespace SomaPraMim.Application.Services.ShoppingListServices
@@ -16,17 +17,9 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
             _context = context;
         }
 
-
-
         public async Task<ShoppingListResponse> CreateShoppingList(ShoppingListCreateRequest request)
         {
-            var user = await _context.Users.FindAsync(request.UserId);
-
-            if (user == null)
-            {
-                throw new ArgumentException("User not found");
-            }
-
+            var user = await _context.Users.FindAsync(request.UserId) ?? throw new ArgumentException("User not found");
             var newList = new ShoppingList
             {
                 Name = request.Name,
@@ -40,11 +33,7 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
 
             return new ShoppingListResponse
             {
-                Name = newList.Name,
-                MarketName = newList.MarketName,
-                Budget = newList.Budget,
-                TotalPrice = newList.TotalPrice,
-                UserId = newList.UserId
+                Id = newList.Id,
             };
         }
 
@@ -58,9 +47,9 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
                     Name = x.Name,
                     Budget = x.Budget,
                     MarketName = x.MarketName,
-                    TotalPrice = x.TotalPrice,
+                    TotalPrice = x.ShoppingItems.Sum(item => item.Price * item.Quantity),
+                    TotalItems = x.ShoppingItems.Sum(item => item.Quantity),
                     UserId = x.UserId,
-
                 })
                 .SingleOrDefaultAsync();
 
@@ -84,7 +73,6 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
                 .ToListAsync();
 
             if (items == null) return null!;
-
             return items;
         }
 
@@ -115,7 +103,6 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
         public async Task<ShoppingList> UpdateShoppingList(long id, ShoppingListUpdateRequest request)
         {
 
-            
             var shoppingList = await _context.ShoppingLists
             .SingleOrDefaultAsync(x => x.Id == id);
 
@@ -139,15 +126,5 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
             .ExecuteDeleteAsync();
         }
 
-        public async Task<decimal> GetShoppingListTotal(long shoppingListId)
-        {
-            var total = await _context.ShoppingItems
-                .Where(x => x.ShoppingListId == shoppingListId)
-                .SumAsync(x => x.Price * x.Quantity);
-
-                return total;
-        }
-
-    
     }
 }

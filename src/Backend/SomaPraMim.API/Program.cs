@@ -11,7 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<SomaPraMimDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Injeção de dependência
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularLocalhost",
+        policy => policy.WithOrigins("http://localhost:4200") 
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+
 builder.Services.AddScoped<IUserContext, SomaPraMimDbContext>();
 builder.Services.AddScoped<IShoppingListContext, SomaPraMimDbContext>();
 builder.Services.AddScoped<IShoppingItemContext, SomaPraMimDbContext>();
@@ -26,6 +33,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseCors("AllowAngularLocalhost");
 app.UseSwagger();
 app.UseSwaggerUI();
 

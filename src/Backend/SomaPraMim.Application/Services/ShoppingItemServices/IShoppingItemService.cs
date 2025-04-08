@@ -10,6 +10,6 @@ namespace SomaPraMim.Application.Services.ShoppingItemServices
         Task<ShoppingItemResponse> GetShoppingItemById(long id);
         Task<IEnumerable<ShoppingItemResponse>> GetShoppingItem(int page = 1, int pageSize = 10);
         Task<int> GetTotal();
-        
+        Task<bool> RemoveShoppingItem(long id);
     }
 }

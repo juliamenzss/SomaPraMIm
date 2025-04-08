@@ -7,6 +7,7 @@ namespace SomaPraMim.Communication.Responses
         public string MarketName { get; set; } = string.Empty;
         public decimal Budget { get; set; }
         public decimal TotalPrice { get; set; } = 0;
+        public int TotalItems { get; set; } = 0;
         public long UserId { get; set; }
     }
 }

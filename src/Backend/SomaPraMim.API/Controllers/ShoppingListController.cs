@@ -55,7 +55,7 @@ namespace SomaPraMim.API.Controllers
             var items = await _service.GetItemsByShoppingListId(shoppingListId);
 
             if (items == null || !items.Any())
-                return NotFound("Não há itens nessa lista ainda!");
+                return NotFound(new {message = "Não há itens nessa lista ainda!"});
 
             return Ok(items);
         }
@@ -120,19 +120,5 @@ namespace SomaPraMim.API.Controllers
             await _service.DeleteShoppingList(id);
             return Ok();
         }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("{id}/total")]
-        public async Task<IActionResult> GetTotal(long shoppingListId)
-        {
-            var total = await _service.GetShoppingListTotal(shoppingListId);
-            if(total <= 0){
-                return NotFound("Lista vazia!");
-            }
-            
-            return Ok(new { TotalPrice = total });
-        }
-    
     }
 }
