@@ -63,11 +63,6 @@ namespace SomaPraMim.API.Controllers
         {
             var shoppingItems = await _service.GetShoppingItem(page, pagesize);
 
-            if (shoppingItems == null || !shoppingItems.Any())
-            {
-                return NotFound();
-            }
-
             var result = new PaginateResponse<ShoppingItemResponse>
             {
                 CurrentPage = page,

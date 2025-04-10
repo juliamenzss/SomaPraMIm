@@ -53,10 +53,6 @@ namespace SomaPraMim.API.Controllers
         public async Task<IActionResult> GetItemsByShoppingList(long shoppingListId)
         {
             var items = await _service.GetItemsByShoppingListId(shoppingListId);
-
-            if (items == null || !items.Any())
-                return NotFound(new {message = "Não há itens nessa lista ainda!"});
-
             return Ok(items);
         }
 

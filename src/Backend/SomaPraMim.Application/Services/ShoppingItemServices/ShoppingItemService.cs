@@ -26,6 +26,7 @@ namespace SomaPraMim.Application.Services.ShoppingItemServices
                 Unit = request.Unit,
                 ShoppingListId = request.ShoppingListId
             };
+            
             _context.ShoppingItems.Add(shoppingItem);
 
             decimal totalPrice = request.Price * request.Quantity;

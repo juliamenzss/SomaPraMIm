@@ -39,23 +39,24 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
 
         public async Task<ShoppingListResponse?> GetShoppingListById(long id)
         {
-            var shopppingList = await _context.ShoppingLists
-                .Where(x => x.Id == id)
-                .Select(x => new ShoppingListResponse
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Budget = x.Budget,
-                    MarketName = x.MarketName,
-                    TotalPrice = x.ShoppingItems.Sum(item => item.Price * item.Quantity),
-                    TotalItems = x.ShoppingItems.Sum(item => item.Quantity),
-                    UserId = x.UserId,
-                })
-                .SingleOrDefaultAsync();
+            var shoppingList = await _context.ShoppingLists
+                .Include(x => x.ShoppingItems)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (shopppingList == null) return null!;
+            if (shoppingList == null) return null;
 
-            return shopppingList;
+            var response = new ShoppingListResponse
+            {
+                Id = shoppingList.Id,
+                Name = shoppingList.Name,
+                Budget = shoppingList.Budget,
+                MarketName = shoppingList.MarketName,
+                UserId = shoppingList.UserId,
+                TotalItems = shoppingList.ShoppingItems?.Sum(item => item.Quantity) ?? 0,
+                TotalPrice = shoppingList.ShoppingItems?.Sum(item => item.Price * item.Quantity) ?? 0
+            };
+
+            return response;
         }
 
         public async Task<IEnumerable<ShoppingItemResponse?>> GetItemsByShoppingListId(long shoppingListId)
