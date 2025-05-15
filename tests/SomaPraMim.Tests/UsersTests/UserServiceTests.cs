@@ -34,12 +34,17 @@ namespace SomaPraMim.Tests.UsersTests
             var service = new UserService(
                 context.Object);
 
-            var page = 2;
-            var pageSize = 2;
-            var result = await service.GetAll(page, pageSize);
+            var search = new UserSearch
+            {
+                Page = 1,
+                Size = 10,
+                Term = null
+            };
 
-            Assert.Equal(page, result.CurrentPage);
-            Assert.Equal(pageSize, result.PageSize);
+            var result = await service.GetAll(search);
+
+            Assert.Equal(search.Page, result.CurrentPage);
+            Assert.Equal(search.Size, result.PageSize);
             Assert.Equal(users.Count, result.TotalItems);
         }
 
@@ -52,7 +57,12 @@ namespace SomaPraMim.Tests.UsersTests
                 new() { Id = 2, Name = "Bob Silva", Email = "bob@email.com" }
             };
 
-            var searchTermActual = "Teste";
+            var search = new UserSearch
+            {
+                Page = 1,
+                Size = 10,
+                Term = "Teste"
+            };
 
             var context = new Mock<IUserContext>();
 
@@ -62,7 +72,7 @@ namespace SomaPraMim.Tests.UsersTests
             var service = new UserService(
                 context.Object);
 
-            var result = await service.GetAll(searchTerm: searchTermActual);
+            var result = await service.GetAll(search);
 
             Assert.Single(result.Items);
             Assert.Equal("Alice Teste", result.Items.First().Name);
@@ -146,7 +156,6 @@ namespace SomaPraMim.Tests.UsersTests
 
             await service.Create(user);
             
-            //assert
             context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -164,7 +173,6 @@ namespace SomaPraMim.Tests.UsersTests
 
              var userUpdate = new UserUpdateRequest()
             {
-                Id =  id,
                 Name = Guid.NewGuid().ToString(),
                 Password = Guid.NewGuid().ToString(),
             };
@@ -175,10 +183,9 @@ namespace SomaPraMim.Tests.UsersTests
                 .Setup(x => x.Users)
                 .ReturnsDbSet(users);
 
-            var service = new UserService(
-                context.Object);
+            var service = new UserService(context.Object);
 
-            await service.Update(userUpdate, userUpdate.Id);
+            await service.Update(userUpdate, id);
             context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }

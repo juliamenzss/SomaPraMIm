@@ -6,7 +6,7 @@ namespace SomaPraMim.Application.Services.UserServices
 {
     public interface IUserService
     {
-        Task<PaginateResponse<UserResponse>> GetAll(int page = 1, int pageSize = 10, string? searchTerm = null);
+        Task<PaginateResponse<UserResponse>> GetAll(UserSearch search);
         Task<UserResponse> GetUser(long id);
         Task<User> Create(UserCreateRequest request);
         Task<User> Update(UserUpdateRequest request, long id );

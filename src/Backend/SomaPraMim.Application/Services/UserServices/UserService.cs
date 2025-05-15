@@ -4,6 +4,7 @@ using SomaPraMim.Communication.Requests.UserRequests;
 using SomaPraMim.Communication.Responses;
 using SomaPraMim.Domain.Contexts;
 using SomaPraMim.Domain.Entities;
+using System.Linq;
 
 namespace SomaPraMim.Application.Services.UserServices
 {
@@ -17,34 +18,30 @@ namespace SomaPraMim.Application.Services.UserServices
             _context = context;
         }
 
-        public async Task<PaginateResponse<UserResponse>> GetAll(int page = 1, int pageSize = 10, string? searchTerm = null)
+        public async Task<PaginateResponse<UserResponse>> GetAll(UserSearch search)
         {
-            var query = _context.Users.AsQueryable();
-            
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                query = query.Where(x => EF.Functions.Like(x.Name.ToLower(), $"%{searchTerm.ToLower()}%"));
-            }
+            var query = _context.Users
+                .Where(UserFilters.SearchByName(search));
 
             var totalItems = await query.CountAsync();
 
             var users = await query
-                .OrderBy(x => x.Name)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(x => new UserResponse
+                .OrderBy(u => u.Name)
+                .Skip((search.Page - 1) * search.Size)
+                .Take(search.Size)
+                .Select(u => new UserResponse
                 {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Email = x.Email,
+                    Id = u.Id,
+                    Name = u.Name,
+                    Email = u.Email,
                 })
-                .ToListAsync();  
-                
+                .ToListAsync(); 
+
             return new PaginateResponse<UserResponse>
             {
                 Items = users,
-                CurrentPage = page,
-                PageSize = pageSize,
+                CurrentPage = search.Page,
+                PageSize = search.Size,
                 TotalItems = totalItems
             };
         }
@@ -63,8 +60,6 @@ namespace SomaPraMim.Application.Services.UserServices
 
                 var user = await query.SingleOrDefaultAsync();
                 return user!;
-
-           
         }
 
         public async Task<User> Create(UserCreateRequest request)
@@ -83,7 +78,6 @@ namespace SomaPraMim.Application.Services.UserServices
 
         public async Task<User> Update(UserUpdateRequest request, long id)
         {
-
              var user = await _context.Users
                     .SingleOrDefaultAsync(x => x.Id == id);
 
@@ -96,7 +90,6 @@ namespace SomaPraMim.Application.Services.UserServices
             user.Password = request.Password;
 
             await _context.SaveChangesAsync();
-
             return user;
         }
 

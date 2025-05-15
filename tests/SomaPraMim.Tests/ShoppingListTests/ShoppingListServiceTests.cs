@@ -32,9 +32,10 @@ namespace SomaPraMim.Tests.ShoppingListTests
                 .Setup(x => x.ShoppingItems)
                 .ReturnsDbSet(fakeShoppingList);
 
-            var expectResult = await _service.GetShoppingListTotal(shoppingListId);
+            var expectResult = await _service.GetItemsByShoppingListId(shoppingListId);
+            var total = expectResult.Sum(item => item!.Price * item.Quantity);
 
-            expectResult.Should().Be(40m);
+            total.Should().Be(40m);
         }
 
 
