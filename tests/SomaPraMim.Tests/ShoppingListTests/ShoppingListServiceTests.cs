@@ -225,5 +225,36 @@ namespace SomaPraMim.Tests.ShoppingListTests
             result.TotalItems.Should().Be(0);
             result.TotalPrice.Should().Be(0);
         }
+        [Fact(DisplayName = "009 - Deve retornar todos os itens se lista de compras for válida")]
+        public async Task GetItemsByShoppingListId_ShouldReturnAllItems_WhenShoppingListIsValid()
+        {
+            var listId = 123;
+            var fakeItems = new List<ShoppingItem>
+            {
+                new () { Id=1, Name = "Pão", Quantity = 1, Price= 5.5m,  ShoppingListId = listId},
+                new () { Id=2, Name = "Manteiga", Quantity = 2, Price= 10.25m,  ShoppingListId = listId}
+            };
+
+            _context.Setup(x => x.ShoppingItems).ReturnsDbSet(fakeItems);
+
+            var result = await _service.GetItemsByShoppingListId(listId);
+            result.Should().NotBeNull();
+            result.Should().HaveCount(2);
+            result.First().Name.Should().Be("Pão");
+            result.Last().Name.Should().Be("Manteiga");
+
+            _context.Verify(x => x.ShoppingItems, Times.Once);
+
+        }
+
+
+        //[Fact(DisplayName = "010 - Deve retornar lista vazia se lista de compras não tiver itens")]
+        //public async Task GetItemsByShoppingListId_ShouldReturnEmptyList_WhenShoppingListHasNoItems()
+        //{
+        //    var listId = 123;
+        //    var fakeItems = new List<ShoppingItem>();
+        //}
+
+
     }
 }
