@@ -22,8 +22,8 @@ namespace SomaPraMim.Application.Services.ShoppingListServices
             var user = await _context.Users.FindAsync(request.UserId) ?? throw new ArgumentException("User not found");
             var newList = new ShoppingList
             {
-                Name = request.Name,
-                MarketName = request.MarketName,
+                Name = request.Name.Trim(),
+                MarketName = request.MarketName.Trim(),
                 Budget = request.Budget,
                 UserId = request.UserId,
             };
