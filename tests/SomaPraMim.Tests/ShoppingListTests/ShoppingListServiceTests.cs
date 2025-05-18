@@ -248,12 +248,22 @@ namespace SomaPraMim.Tests.ShoppingListTests
         }
 
 
-        //[Fact(DisplayName = "010 - Deve retornar lista vazia se lista de compras não tiver itens")]
-        //public async Task GetItemsByShoppingListId_ShouldReturnEmptyList_WhenShoppingListHasNoItems()
-        //{
-        //    var listId = 123;
-        //    var fakeItems = new List<ShoppingItem>();
-        //}
+        [Fact(DisplayName = "010 - Deve retornar lista vazia se lista de compras não tiver itens")]
+        public async Task GetItemsByShoppingListId_ShouldReturnEmptyList_WhenShoppingListHasNoItems()
+        {
+            var listId = 123;
+            var fakeItems = new List<ShoppingItem>();
+
+            _context
+                .Setup(x => x.ShoppingItems)
+                .ReturnsDbSet(fakeItems);
+
+            var result = await _service.GetItemsByShoppingListId(listId);
+
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+
+        }
 
 
     }
