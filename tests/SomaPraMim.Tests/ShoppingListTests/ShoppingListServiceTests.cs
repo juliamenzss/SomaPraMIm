@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Moq.EntityFrameworkCore;
 using SomaPraMim.Application.Services.ShoppingListServices;
@@ -19,7 +20,6 @@ namespace SomaPraMim.Tests.ShoppingListTests
             _context = new Mock<IShoppingListContext>();
             _service = new ShoppingListService(_context.Object);
         }
-
         [Fact(DisplayName = "001 - Deve retornar valor total")]
         public async Task GivenShoppingListWhenGetTotalThenReturnsCorrectSum()
         {
@@ -40,7 +40,6 @@ namespace SomaPraMim.Tests.ShoppingListTests
 
             total.Should().Be(40m);
         }
-
         [Fact(DisplayName = "002 - Deve retornar save changes se adicionado com dados válidos")]
         public async Task CreateShoppingList_ShouldCallAddAndSaveChanges()
         {
@@ -71,7 +70,6 @@ namespace SomaPraMim.Tests.ShoppingListTests
             _context.Verify(x => x.ShoppingLists.Add(It.IsAny<ShoppingList>()), Times.Once()); //verifica se o Add foi chamado 1 vez
             _context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once()); //verifica se o savechange foi chamado 1 vez
         }
-
         [Fact(DisplayName = "003 - Deve retornar Id se adicionado com dados válidos")]
         public async Task CreateShoppingList_ShouldReturnCreatedListId()
         {
@@ -102,7 +100,6 @@ namespace SomaPraMim.Tests.ShoppingListTests
 
             result.Id.Should().Be(expectId);
         }
-
         [Fact(DisplayName = "004 - Deve retornar dados completos se lista existir pelo ID")]
         public async Task GetShoppingListById_ShouldReturnFullData_WhenListExists()
         {
@@ -133,7 +130,6 @@ namespace SomaPraMim.Tests.ShoppingListTests
             result.TotalItems.Should().Be(3);
             result.TotalPrice.Should().Be(35);
         }
-
         [Fact(DisplayName = "005 - Deve retornar nulo se lista não existir pelo ID")]
         public async Task GetShoppingListById_ShouldReturnNull_WhenListDoesNotExist()
         {
@@ -144,7 +140,6 @@ namespace SomaPraMim.Tests.ShoppingListTests
             var result = await _service.GetShoppingListById(fakeId);
             result.Should().BeNull();
         }
-
         [Fact(DisplayName = "006 - Deve calcular total e quantidade se lista tiver itens")]
         public async Task GetShoppingListById_ShouldCalculateTotalPriceAndQuantity_WhenListHasItems()
         {
@@ -167,13 +162,11 @@ namespace SomaPraMim.Tests.ShoppingListTests
               .Setup(x => x.ShoppingLists)
               .ReturnsDbSet(fakeShoppingList);
 
-
             var result = await _service.GetShoppingListById(listId);
             result.Should().NotBeNull();
             result.TotalItems.Should().Be(3);
             result.TotalPrice.Should().Be(35);
         }
-
         [Fact(DisplayName = "007 - Deve ignorar itens com preço zero")]
         public async Task GetShoppingListById_ShouldIgnoreItemsWithZeroPrice()
         {
@@ -200,13 +193,11 @@ namespace SomaPraMim.Tests.ShoppingListTests
             result.TotalItems.Should().Be(5);
             result.TotalPrice.Should().Be(35);
         }
-
         [Fact(DisplayName = "008 - Deve tratar lista nula de itens corretamente")]
         public async Task GetShoppingListById_ShouldHandleNullItemsList()
         {
             var listId = 123;
             var fakeShoppingList = new ShoppingList()
-
             {
                 Id = listId,
                 Name = "Test",
@@ -244,10 +235,7 @@ namespace SomaPraMim.Tests.ShoppingListTests
             result.Last().Name.Should().Be("Manteiga");
 
             _context.Verify(x => x.ShoppingItems, Times.Once);
-
         }
-
-
         [Fact(DisplayName = "010 - Deve retornar lista vazia se lista de compras não tiver itens")]
         public async Task GetItemsByShoppingListId_ShouldReturnEmptyList_WhenShoppingListHasNoItems()
         {
@@ -262,9 +250,82 @@ namespace SomaPraMim.Tests.ShoppingListTests
 
             result.Should().NotBeNull();
             result.Should().BeEmpty();
+        }
+        [Fact(DisplayName = "011 - Deve atualizar e retornar lista se ID e dados forem válidos")]
+        public async Task UpdateShoppingList_ShouldUpdateAndReturnList_WhenIdAndDataAreValid()
+        {
+            var listId = 123;
+            var shoppingList = new ShoppingList()
+            {
+                Id = listId,
+                Name = Guid.NewGuid().ToString(),
+                Budget = Random.Shared.Next(0, 1000),
+                MarketName = Guid.NewGuid().ToString(),
+            };
+            var shoppingListUpdate = new ShoppingListUpdateRequest()
+            {
+                Name = Guid.NewGuid().ToString(),
+                Budget = Random.Shared.Next(0, 1000),
+                MarketName = Guid.NewGuid().ToString(),
+            };
+            _context.Setup(x => x.ShoppingLists).ReturnsDbSet([shoppingList]);
+
+            var result = await _service.UpdateShoppingList(listId, shoppingListUpdate);
+
+            _context
+                .Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            result.Id.Should().Be(listId);
+            result.Name.Should().Be(shoppingListUpdate.Name);
+            result.Budget.Should().Be(shoppingListUpdate.Budget);
+            result.MarketName.Should().Be(shoppingListUpdate.MarketName);
 
         }
 
+        [Fact(DisplayName = "012 - Deve manter valores originais se campos da requisição forem nulos")]
+        public async Task UpdateShoppingList_ShouldKeepOriginalValues_WhenRequestFieldsAreNull()
+        {
 
+            var listId = 123;
+            var shoppingList = new ShoppingList()
+            {
+                Id = listId,
+                Name = Guid.NewGuid().ToString(),
+                Budget = Random.Shared.Next(0, 1000),
+                MarketName = Guid.NewGuid().ToString(),
+            };
+            var shoppingListUpdate = new ShoppingListUpdateRequest()
+            {
+                Name = null,
+                Budget = null,
+                MarketName = null,
+            };
+
+            _context
+                .Setup(x => x.ShoppingLists)
+                .ReturnsDbSet([shoppingList]);
+
+            var result = await _service.UpdateShoppingList(listId, shoppingListUpdate);
+
+            result.Id.Should().Be(listId);
+            result.Name.Should().Be(shoppingList.Name);
+            result.Budget.Should().Be(shoppingList.Budget);
+            result.MarketName.Should().Be(shoppingList.MarketName);
+        }
+        [Fact(DisplayName = "013 - Deve retornar nulo se lista de compras não existir ao atualizar")]
+        public async Task UpdateShoppingList_ShouldReturnNull_WhenShoppingListDoesNotExist()
+        {
+            
+            var shoppingListExisting = new ShoppingList { Id = 1 };
+            var updateRequest = new ShoppingListUpdateRequest
+            {
+                Name = "Updated Name",
+                Budget = 500,
+                MarketName = "Updated Market"
+            };
+            _context.Setup(x => x.ShoppingLists).ReturnsDbSet([shoppingListExisting]);
+            var result = await _service.UpdateShoppingList(999, updateRequest);
+
+            result.Should().BeNull();
+        }
     }
 }
