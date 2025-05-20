@@ -6,8 +6,7 @@ using SomaPraMim.Application.Services.ShoppingListServices;
 using SomaPraMim.Communication.Requests.ShoppingListRequests;
 using SomaPraMim.Domain.Contexts;
 using SomaPraMim.Domain.Entities;
-using System.Collections.Generic;
-using System.Xml.Linq;
+
 
 namespace SomaPraMim.Tests.ShoppingListTests
 {
@@ -63,12 +62,12 @@ namespace SomaPraMim.Tests.ShoppingListTests
 
 
             _context
-                .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())) //simula que o saveChange foi chamado com sucesso e salvou 1 item.
-                .ReturnsAsync(1); //comum retornar 1 qndo adicionado
+                .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
-            await _service.CreateShoppingList(request); //chamada real do service
-            _context.Verify(x => x.ShoppingLists.Add(It.IsAny<ShoppingList>()), Times.Once()); //verifica se o Add foi chamado 1 vez
-            _context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once()); //verifica se o savechange foi chamado 1 vez
+            await _service.CreateShoppingList(request);
+            _context.Verify(x => x.ShoppingLists.Add(It.IsAny<ShoppingList>()), Times.Once());
+            _context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
         }
         [Fact(DisplayName = "003 - Deve retornar Id se adicionado com dados válidos")]
         public async Task CreateShoppingList_ShouldReturnCreatedListId()
