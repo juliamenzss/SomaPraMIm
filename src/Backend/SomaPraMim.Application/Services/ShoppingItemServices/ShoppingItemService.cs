@@ -75,32 +75,38 @@ namespace SomaPraMim.Application.Services.ShoppingItemServices
                 })
                 .SingleOrDefaultAsync();
 
-
             if(item == null) return null!;
             return item;
         }
-        public async Task<IEnumerable<ShoppingItemResponse>> GetShoppingItem(int page = 1, int pageSize = 10)
+        public async Task<PaginateResponse<ShoppingItemResponse>> GetShoppingItem(int page = 1, int pageSize = 10)
         {
-            var items = await _context.ShoppingItems
-            .OrderBy(x => x.Name)
-            .Select( x => new ShoppingItemResponse
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Quantity = x.Quantity,
-                Price = x.Price,
-            })
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+            var totalItems = await _context.ShoppingItems.CountAsync();
 
-            return items;
+            var items = await _context.ShoppingItems
+                .OrderBy(x => x.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new ShoppingItemResponse
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Quantity = x.Quantity,
+                    Price = x.Price
+                })
+                .ToListAsync();
+
+            return new PaginateResponse<ShoppingItemResponse>
+            {
+                Items = items,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
         }
+
         public async Task<int> GetTotal()
         {
             return await _context.ShoppingItems.CountAsync();
-        }
-
-        
+        } 
     }
 }
