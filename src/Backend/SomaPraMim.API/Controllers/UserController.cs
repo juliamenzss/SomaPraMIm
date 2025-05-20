@@ -15,12 +15,9 @@ namespace SomaPraMim.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserResponse>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        public async Task<ActionResult<PaginateResponse<UserResponse>>> GetUsers(
-        [FromQuery] int page = 1, 
-        [FromQuery] int pageSize = 10, 
-        [FromQuery] string? searchTerm = null)
+        public async Task<ActionResult<PaginateResponse<UserResponse>>> GetUsers([FromQuery] UserSearch search)
         {
-            var paginatedResult = await _service.GetAll(page, pageSize, searchTerm);
+            var paginatedResult = await _service.GetAll(search);
             return Ok(paginatedResult);
         }
 
