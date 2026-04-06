@@ -78,4 +78,5 @@ dotnet test --logger "console;verbosity=detailed"
 ```bash
 dotnet test --filter "Name=NomeDoMetodoDeTeste"
 ```
+<img width="1600" height="716" alt="image" src="https://github.com/user-attachments/assets/b9fac243-473c-49c6-a2d7-361d81733d3d" />
 
