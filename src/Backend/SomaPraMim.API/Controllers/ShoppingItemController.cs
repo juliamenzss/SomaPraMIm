@@ -68,7 +68,7 @@ namespace SomaPraMim.API.Controllers
                 CurrentPage = page,
                 PageSize = pagesize,
                 TotalItems = await _service.GetTotal(),
-                Items = shoppingItems,
+                Items = (IEnumerable<ShoppingItemResponse>)shoppingItems,
             };
             return Ok(result);
         }
