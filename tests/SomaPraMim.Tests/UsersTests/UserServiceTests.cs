@@ -188,5 +188,94 @@ namespace SomaPraMim.Tests.UsersTests
             await service.Update(userUpdate, id);
             context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
+        [Fact(DisplayName = "007 - Deve retornar null quando usuário não existir")]
+        public async Task GivenGetUser_WhenUserDoesNotExist_ThenReturnNull()
+        {
+            var context = new Mock<IUserContext>();
+
+            context.Setup(x => x.Users).ReturnsDbSet([]);
+
+            var service = new UserService(context.Object);
+            var result = await service.GetUser(999);
+
+            Assert.Null(result);
+        }
+
+        [Fact(DisplayName = "008 - Deve retornar false se usuário não existir")]
+        public async Task GivenExists_WhenUserDoesNotExist_ThenReturnFalse()
+        {
+            var context = new Mock<IUserContext>();
+            context.Setup(x => x.Users).ReturnsDbSet([]);
+            var result = await new UserService(context.Object).Exists(999);
+
+            Assert.False(result);
+        }
+
+        [Fact(DisplayName = "009 - Deve criar usuário corretamente")]
+        public async Task GivenCreate_WhenValidRequest_ThenAddUser()
+        {
+            var context = new Mock<IUserContext>();
+
+            var users = new List<User>();
+            context.Setup(x => x.Users).ReturnsDbSet(users);
+
+            var service = new UserService(context.Object);
+
+            var request = new UserCreateRequest
+            {
+                Name = "Teste",
+                Email = "teste@email.com",
+                Password = "123"
+            };
+
+            var result = await service.Create(request);
+
+            Assert.Equal(request.Name, result.Name);
+            Assert.Equal(request.Email, result.Email);
+        }
+
+        [Fact(DisplayName = "010 - Deve retornar null ao atualizar usuário inexistente")]
+        public async Task GivenUpdate_WhenUserNotFound_ThenReturnNull()
+        {
+            var context = new Mock<IUserContext>();
+
+            context.Setup(x => x.Users)
+                   .ReturnsDbSet([]);
+
+            var service = new UserService(context.Object);
+
+            var request = new UserUpdateRequest
+            {
+                Name = "Novo Nome",
+                Password = "NovaSenha"
+            };
+
+            var result = await service.Update(request, 999);
+
+            Assert.Null(result);
+        }
+
+        [Fact(DisplayName = "011 - Deve retornar lista vazia quando não houver usuários")]
+        public async Task GivenGetAll_WhenNoUsers_ThenReturnEmptyList()
+        {
+            var context = new Mock<IUserContext>();
+
+            context.Setup(x => x.Users)
+                   .ReturnsDbSet([]);
+
+            var service = new UserService(context.Object);
+
+            var search = new UserSearch
+            {
+                Page = 1,
+                Size = 10,
+                Term = null
+            };
+
+            var result = await service.GetAll(search);
+
+            Assert.Empty(result.Items);
+            Assert.Equal(0, result.TotalItems);
+        }
     }
 }
